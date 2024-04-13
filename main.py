@@ -55,11 +55,11 @@ def developer(desarrollador: str):
 @app.get('/userdata')
 def userdata(User_id: str):
     # Filtrar el DataFrame de reseñas por el usuario especifico
-    user_df = df_UserReviews[df_UserReviews['user_id'] == User_id]
+    user_df = df_UserReviews[df_UserReviews['item_id'] == User_id]
 
     # Calcular el dinero gastado, el porcentaje de recomendacion y la cantidad de items
-    money_spent = user_df['total_spend'].sum()
-    recomend_percentage = user_df['recommend'].mean()
+    money_spent = user_df['price'].sum()
+    recomend_percentage = user_df['porcentaje'].mean()
     items_count = len(user_df)
 
     # Convertir el resultado a formato JSON
