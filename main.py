@@ -75,31 +75,33 @@ def userdata(User_id: str):
 # endpoint 'UserForGenre'
 @app.get('/UserForGenre')
 def UserForGenre(genero: str):
+    # Asegurarse de que 'item_id' sea del mismo tipo de datos en ambos DataFrames
     df_UserItems['item_id'] = df_UserItems['item_id'].astype('int64')
 
+    # Filtrar el DataFrame de reseñas por el género específico
+    genre_reviews_df = df_UserReviews[df_UserReviews['name'] == genero]
+
     # Fusionar los DataFrames utilizando 'item_id' como clave
-    merged_df = df_UserItems.merge(df_UserReviews[['item_id', 'year']], how='left', on='item_id')
+    merged_df = df_UserItems.merge(genre_reviews_df[['item_id', 'year']], how='left', on='item_id')
 
-    # Asignar el valor de la columna 'year' al DataFrame df_UserItems
-    df_UserItems['year'] = merged_df['year']
+    # Manejar valores faltantes si es necesario
+    merged_df.fillna(0, inplace=True)
 
-    # Filtrar el DataFrame de reseñas por el genero especifico
-    genre_df = df_UserItems[df_UserItems[genero] == 1]
+    # Realizar las operaciones de agrupación y cálculo
+    total_hours_by_user_and_year = merged_df.groupby(['user_id', 'year'])['playtime_forever'].sum()
+    max_user = total_hours_by_user_and_year.idxmax()
 
-    # Agrupar por usuario y año, sumar las horas jugadas y encontrar el usuario con mas jugadas
-    total_hours_by_user_and_year = genre_df.groupby(['item_id', 'year'])['playtime_forever'].sum()
-    max_user = total_hours_by_user_and_year.groupby('item_id').sum().idxmax()
-
-    # Obtener la lista de acumulacion de horas jugadas por año para el usuario con mas horas jugadas
+    # Generar la respuesta JSON
     max_user_hours_by_year = total_hours_by_user_and_year.loc[max_user].reset_index()
     max_user_hours_list = [{"Año": int(row['year']), "Horas": row['playtime_forever']} for _, row in max_user_hours_by_year.iterrows()]
 
-    # Convertir el resultado a formato JSON
-    result= {
-        "Usuario con mas horas jugadas para Genero {}".format(genero): max_user,
+    result = {
+        "Usuario con mas horas jugadas para Género {}".format(genero): max_user,
         "Horas jugadas": max_user_hours_list
     }
     return result
+
+
 
 
 # Función para el endpoint 'best_developer_year'
@@ -126,16 +128,20 @@ def best_developer_year(año: int):
 # Función para el endpoint 'developer_reviews_analysis'
 @app.get('/developer_reviews_analysis')
 def developer_reviews_analysis(desarrolladora: str):
-    # Filtrar el DataFrame de reseñas por la desarrolladora específica
-    reviews_by_developer = df_UserReviews[df_UserReviews['name'] == desarrolladora]
+    # Filtrar las reseñas por desarrolladora específica en base a la tabla steam_games
+    filtered_reviews = df_UserReviews[df_UserReviews['name'].isin(df_SteamGames[df_SteamGames['developer'] == desarrolladora]['name'])]
     
     # Calcular el análisis de sentimiento
-    sentiment_counts = reviews_by_developer['sentiment_analysis'].value_counts()
+    sentiment_counts = filtered_reviews['sentiment_analysis'].value_counts()
     
-    # Convertir el resultado a formato JSON
-    result = {desarrolladora: {
+    # Obtener el nombre de la desarrolladora
+    developer_name = desarrolladora
+    
+    # Crear el diccionario de resultados
+    result = {developer_name: {
         'Negative': sentiment_counts.get(0, 0),
         'Neutral': sentiment_counts.get(1, 0),
         'Positive': sentiment_counts.get(2, 0)
     }}
+    
     return result
