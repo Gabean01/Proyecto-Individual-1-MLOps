@@ -127,7 +127,7 @@ def best_developer_year(año: int):
 @app.get('/developer_reviews_analysis')
 def developer_reviews_analysis(desarrolladora: str):
     # Filtrar el DataFrame de reseñas por la desarrolladora específica
-    reviews_by_developer = df_UserReviews[df_UserReviews['developer'] == desarrolladora]
+    reviews_by_developer = df_UserReviews[df_UserReviews['name'] == desarrolladora]
     
     # Calcular el análisis de sentimiento
     sentiment_counts = reviews_by_developer['sentiment_analysis'].value_counts()
