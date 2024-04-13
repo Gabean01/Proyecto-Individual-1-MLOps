@@ -75,12 +75,20 @@ def userdata(User_id: str):
 # endpoint 'UserForGenre'
 @app.get('/UserForGenre')
 def UserForGenre(genero: str):
+    df_UserItems['item_id'] = df_UserItems['item_id'].astype('int64')
+
+    # Fusionar los DataFrames utilizando 'item_id' como clave
+    merged_df = df_UserItems.merge(df_UserReviews[['item_id', 'year']], how='left', on='item_id')
+
+    # Asignar el valor de la columna 'year' al DataFrame df_UserItems
+    df_UserItems['year'] = merged_df['year']
+
     # Filtrar el DataFrame de reseñas por el genero especifico
     genre_df = df_UserItems[df_UserItems[genero] == 1]
 
     # Agrupar por usuario y año, sumar las horas jugadas y encontrar el usuario con mas jugadas
-    total_hours_by_user_and_year = genre_df.groupby(['user_id', 'year'])['playtime_forever'].sum()
-    max_user = total_hours_by_user_and_year.groupby('user_id').sum().idxmax()
+    total_hours_by_user_and_year = genre_df.groupby(['item_id', 'year'])['playtime_forever'].sum()
+    max_user = total_hours_by_user_and_year.groupby('item_id').sum().idxmax()
 
     # Obtener la lista de acumulacion de horas jugadas por año para el usuario con mas horas jugadas
     max_user_hours_by_year = total_hours_by_user_and_year.loc[max_user].reset_index()
