@@ -30,10 +30,12 @@ columnstouse=['item_id','playtime_forever','user_id']
 df_UserItems=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\user_items_limpio.parquet",columns=columnstouse)
 df_SteamGames=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\steam_games_limpio.parquet")
 df_UserReviews=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\user_reviews_limpio.parquet")
+df_Recomendacion=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\recomendacion_item.parquet")
 
 df_SteamGames=df_SteamGames.head(14000)
 df_UserItems=df_UserItems.head(14000)
 df_UserReviews=df_UserReviews.head(14000)
+df_Recomendacion=df_Recomendacion.head(14000)
 
 # endpoint 'developer'
 @app.get('/developer')
@@ -93,7 +95,7 @@ def UserForGenre(genero: str):
 
     # Generar la respuesta JSON
     max_user_hours_by_year = total_hours_by_user_and_year.loc[max_user]
-    max_user_hours_list = [{"Año": int(row['year']), "Horas": row['playtime_forever']} for _, row in max_user_hours_by_year]
+    max_user_hours_list = [{"Año": int(max_user_hours_by_year['year']), "Horas": max_user_hours_by_year['playtime_forever']}]
 
     result = {
         "Usuario con mas horas jugadas para Género {}".format(genero): max_user,
@@ -104,7 +106,7 @@ def UserForGenre(genero: str):
 
 
 
-# Función para el endpoint 'best_developer_year'
+# endpoint 'best_developer_year'
 @app.get('/best_developer_year')
 def best_developer_year(año: int):
     # Filtrar el DataFrame de reseñas por el año específico y por recomendaciones positivas
@@ -125,7 +127,7 @@ def best_developer_year(año: int):
 
 
 
-# Función para el endpoint 'developer_reviews_analysis'
+# endpoint 'developer_reviews_analysis'
 @app.get('/developer_reviews_analysis')
 def developer_reviews_analysis(desarrolladora: str):
     # Filtrar las reseñas por desarrolladora específica en base a la tabla steam_games
@@ -145,3 +147,14 @@ def developer_reviews_analysis(desarrolladora: str):
     }}
     
     return result
+
+
+# endpoint 'recomendacion_juego'
+@app.get('/recomendacion_juego/{id}')
+def recomendacion_juego(item_id: int):
+    try:
+        item_id = int(item_id)
+        resultado = df_Recomendacion(item_id)
+        return resultado
+    except Exception as e:
+        return{"error":str(e)}
