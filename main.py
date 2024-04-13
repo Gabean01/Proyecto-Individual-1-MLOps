@@ -153,8 +153,15 @@ def developer_reviews_analysis(desarrolladora: str):
 @app.get('/recomendacion_juego/{id}')
 def recomendacion_juego(item_id: int):
     try:
+        # Convertir el item_id a entero
         item_id = int(item_id)
-        resultado = df_Recomendacion(item_id)
-        return resultado
+        
+        # Obtener las recomendaciones del juego específico
+        recomendaciones = df_Recomendacion[df_Recomendacion['item_id'] == item_id]['Recomendaciones']
+        
+        # Convertir las recomendaciones a una lista
+        recomendaciones_list = recomendaciones.tolist()
+        
+        return {"Recomendaciones": recomendaciones_list}
     except Exception as e:
-        return{"error":str(e)}
+        return {"error": str(e)}
