@@ -79,7 +79,7 @@ def UserForGenre(genero: str):
     df_UserItems['item_id'] = df_UserItems['item_id'].astype('int64')
 
     # Filtrar el DataFrame de reseñas por el género específico
-    genre_reviews_df = df_UserReviews[df_UserReviews['name'] == genero]
+    genre_reviews_df = df_UserReviews[df_UserReviews['genre'] == genero]
 
     # Fusionar los DataFrames utilizando 'item_id' como clave
     merged_df = df_UserItems.merge(genre_reviews_df[['item_id', 'year']], how='left', on='item_id')
@@ -92,8 +92,8 @@ def UserForGenre(genero: str):
     max_user = total_hours_by_user_and_year.idxmax()
 
     # Generar la respuesta JSON
-    max_user_hours_by_year = total_hours_by_user_and_year.loc[max_user].reset_index()
-    max_user_hours_list = [{"Año": int(row['year']), "Horas": row['playtime_forever']} for _, row in max_user_hours_by_year.iterrows()]
+    max_user_hours_by_year = total_hours_by_user_and_year.loc[max_user]
+    max_user_hours_list = [{"Año": int(row['year']), "Horas": row['playtime_forever']} for _, row in max_user_hours_by_year]
 
     result = {
         "Usuario con mas horas jugadas para Género {}".format(genero): max_user,
