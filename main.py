@@ -33,10 +33,10 @@ async def root():
 
 # Cargar Datos
 columnstouse=['item_id','playtime_forever','user_id']
-df_UserItems=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\user_items_limpio.parquet",columns=columnstouse)
-df_SteamGames=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\steam_games_limpio.parquet")
-df_UserReviews=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\user_reviews_limpio.parquet")
-df_Recomendacion=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\recomendacion_item.parquet")
+df_UserItems=pd.read_parquet("/Datasets/ArchivosPARQUET/user_items_limpio.parquet",columns=columnstouse)
+df_SteamGames=pd.read_parquet("/Datasets/ArchivosPARQUET/steam_games_limpio.parquet")
+df_UserReviews=pd.read_parquet("/Datasets/ArchivosPARQUET/user_reviews_limpio.parquet")
+df_Recomendacion=pd.read_parquet("/Datasets/ArchivosPARQUET/recomendacion_item.parquet")
 
 df_SteamGames=df_SteamGames.head(14000)
 df_UserItems=df_UserItems.head(14000)
