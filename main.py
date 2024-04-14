@@ -21,14 +21,6 @@ urls = [
     "https://github.com/Gabean01/Proyecto-Individual-1-MLOps/raw/main/Datasets/ArchivosPARQUET/recomendacion_item.parquet"
 ]
 
-# Local file names to save
-local_filenames = [
-    "user_items_limpio.parquet",
-    "steam_games_limpio.parquet",
-    "user_reviews_limpio.parquet",
-    "recomendacion_item.parquet"
-]
-
 # Crea una instancia de la aplicación FastAPI
 app = FastAPI(
     tittle = 'Modelo de recomendacion: SteamGames',
@@ -46,23 +38,13 @@ async def root():
     """
     return {"Mensaje": "Proyecto realizado por Gary Bean"}
 
-
-# Downloading and saving files
-for url, filename in zip(urls, local_filenames):
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(filename, 'wb') as f:
-            f.write(response.content)
-        print(f"File '{filename}' downloaded successfully.")
-    else:
-        print(f"Failed to download file from '{url}'. Status code: {response.status_code}")
-
 # Loading into DataFrames
 columnstouse=['item_id','playtime_forever','user_id']
-df_UserItems = pd.read_parquet("user_items_limpio.parquet", columns=['item_id', 'playtime_forever', 'user_id'])
-df_SteamGames = pd.read_parquet("steam_games_limpio.parquet")
-df_UserReviews = pd.read_parquet("user_reviews_limpio.parquet")
-df_Recomendacion = pd.read_parquet("recomendacion_item.parquet")
+# Reading Parquet files into DataFrames
+dfs = [pd.read_parquet(url) for url in urls]
+
+# Assigning DataFrames to variables
+df_UserItems, df_SteamGames, df_UserReviews, df_Recomendacion = dfs
 
 df_SteamGames=df_SteamGames.head(14000)
 df_UserItems=df_UserItems.head(14000)
