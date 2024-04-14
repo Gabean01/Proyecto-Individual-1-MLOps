@@ -3,7 +3,7 @@ pandas==2.2.2
 uvicorn==0.29.0
 fastparquet==0.7.1
 nltk==3.6.5
-numpy==1.21.5
+numpy==1.26.4
 pyarrow==5.0.0
 scikit-learn==1.4.2
 scikit-learn==0.0.post12
