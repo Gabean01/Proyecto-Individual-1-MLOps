@@ -80,9 +80,13 @@ def userdata(User_id: str):
     return result
 
 
-# endpoint 'UserForGenre'
+# Endpoint 'UserForGenre'
 @app.get('/UserForGenre')
 def UserForGenre(genero: str):
+    # Verificar si el género existe en los datos
+    if genero not in df_UserReviews['genre'].unique():
+        raise HTTPException(status_code=404, detail="El género especificado no está presente en los datos")
+
     # Asegurarse de que 'item_id' sea del mismo tipo de datos en ambos DataFrames
     df_UserItems['item_id'] = df_UserItems['item_id'].astype('int64')
 
@@ -92,23 +96,26 @@ def UserForGenre(genero: str):
     # Fusionar los DataFrames utilizando 'item_id' como clave
     merged_df = df_UserItems.merge(genre_reviews_df[['item_id', 'year']], how='left', on='item_id')
 
-    # Manejar valores faltantes si es necesario
-    merged_df.fillna(0, inplace=True)
+    # Manejar valores faltantes de manera más precisa
+    merged_df['playtime_forever'].fillna(0, inplace=True)
 
     # Realizar las operaciones de agrupación y cálculo
     total_hours_by_user_and_year = merged_df.groupby(['user_id', 'year'])['playtime_forever'].sum()
     max_user = total_hours_by_user_and_year.idxmax()
 
-    # Generar la respuesta JSON
+    # Obtener el usuario con más horas jugadas
     max_user_hours_by_year = total_hours_by_user_and_year.loc[max_user]
-    max_user_hours_list = [{"Año": int(max_user_hours_by_year['year']), "Horas": max_user_hours_by_year['playtime_forever']}]
 
+    # Generar la respuesta JSON mejorada
     result = {
-        "Usuario con mas horas jugadas para Género {}".format(genero): max_user,
-        "Horas jugadas": max_user_hours_list
+        "genre": genero,
+        "user_with_most_hours": {
+            "user_id": max_user[0],
+            "year": int(max_user[1]),
+            "total_hours_played": max_user_hours_by_year
+        }
     }
     return result
-
 
 
 
