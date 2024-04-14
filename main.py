@@ -5,6 +5,12 @@ import numpy as np
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.feature_extraction.text import TfidfVectorizer
 from starlette.staticfiles import StaticFiles
+from fastapi import FastAPI
+from sklearn.utils.extmath import randomized_svd
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+import json
 
 # Crea una instancia de la aplicación FastAPI
 app = FastAPI(
@@ -149,19 +155,22 @@ def developer_reviews_analysis(desarrolladora: str):
     return result
 
 
-# endpoint 'recomendacion_juego'
+# Endpoint para obtener recomendaciones de juegos similares
+# Crear un vectorizador de texto
+vectorizador_texto = CountVectorizer()
+vectores_texto = vectorizador_texto.fit_transform(df_Recomendacion['specs']).toarray()
+
+# Calcular la similitud del coseno entre vectores
+similitud_cos = cosine_similarity(vectores_texto)
+
 @app.get('/recomendacion_juego/{id}')
-def recomendacion_juego(item_id: int):
-    try:
-        # Convertir el item_id a entero
-        item_id = int(item_id)
-        
-        # Obtener las recomendaciones del juego específico
-        recomendaciones = df_Recomendacion[df_Recomendacion['item_id'] == item_id]['Recomendaciones']
-        
-        # Convertir las recomendaciones a una lista
-        recomendaciones_list = recomendaciones.tolist()
-        
-        return {"Recomendaciones": recomendaciones_list}
-    except Exception as e:
-        return {"error": str(e)}
+def recomendacion_juego(id: int):
+    if id not in df_Recomendacion['item_id'].values:
+        return {'mensaje': 'No existe el id del juego.'}
+    
+    indice_producto = df_Recomendacion[df_Recomendacion["item_id"] == id].index[0]
+    distancias = similitud_cos[indice_producto]
+    lista_juegos_similares = sorted(list(enumerate(distancias)), reverse=True, key=lambda x: x[1])[1:6]
+    juegos_recomendados = [df_Recomendacion.iloc[i[0]]['name'] for i in lista_juegos_similares]
+    
+    return {'juegos_recomendados': juegos_recomendados}
