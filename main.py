@@ -11,15 +11,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 import json
-import requests
-
-# URLs of the files to download
-urls = [
-    "https://github.com/Gabean01/Proyecto-Individual-1-MLOps/raw/main/Datasets/ArchivosPARQUET/user_items_limpio.parquet",
-    "https://github.com/Gabean01/Proyecto-Individual-1-MLOps/raw/main/Datasets/ArchivosPARQUET/steam_games_limpio.parquet",
-    "https://github.com/Gabean01/Proyecto-Individual-1-MLOps/raw/main/Datasets/ArchivosPARQUET/user_reviews_limpio.parquet",
-    "https://github.com/Gabean01/Proyecto-Individual-1-MLOps/raw/main/Datasets/ArchivosPARQUET/recomendacion_item.parquet"
-]
 
 # Crea una instancia de la aplicación FastAPI
 app = FastAPI(
@@ -38,13 +29,14 @@ async def root():
     """
     return {"Mensaje": "Proyecto realizado por Gary Bean"}
 
-# Loading into DataFrames
-columnstouse=['item_id','playtime_forever','user_id']
-# Reading Parquet files into DataFrames
-dfs = [pd.read_parquet(url) for url in urls]
 
-# Assigning DataFrames to variables
-df_UserItems, df_SteamGames, df_UserReviews, df_Recomendacion = dfs
+
+# Cargar Datos
+columnstouse=['item_id','playtime_forever','user_id']
+df_UserItems=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\user_items_limpio.parquet",columns=columnstouse)
+df_SteamGames=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\steam_games_limpio.parquet")
+df_UserReviews=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\user_reviews_limpio.parquet")
+df_Recomendacion=pd.read_parquet("C:\\Users\\Gary Alexander Bean\\Desktop\\Proyecto-Individual-1-MLOps\\Datasets\\ArchivosPARQUET\\recomendacion_item.parquet")
 
 df_SteamGames=df_SteamGames.head(14000)
 df_UserItems=df_UserItems.head(14000)
