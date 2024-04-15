@@ -38,5 +38,7 @@ Finalmente, la implementación del modelo de Machine Learning fue una etapa emoc
 En conclusión, este proyecto ha sido una experiencia enriquecedora que me ha permitido explorar y comprender en profundidad el fascinante mundo de los juegos en Steam. Cada etapa del proceso, desde la preparación de datos hasta la implementación del modelo de Machine Learning, ha sido un desafío gratificante que me ha ayudado a desarrollar mis habilidades y conocimientos en el campo del análisis de datos y la inteligencia artificial. ¡Explora y disfruta de este fascinante viaje por el mundo de los juegos en Steam!
 
 
-
+## Video
+Aqui esta el video explicativo
+[Ver video](https://youtu.be/p0ZPLF7DvPY)
 
